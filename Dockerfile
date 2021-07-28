@@ -9,7 +9,7 @@ RUN mkdir -p /run/nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 RUN apk update
 
-RUN apk add libpng libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev libxpm-dev gd && docker-php-ext-install gd && docker-php-ext-install zip
+RUN apk add libzip-dev zip libpng libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev libxpm-dev gd && docker-php-ext-install gd && docker-php-ext-install zip
 # 3 Install Additional dependencies
 RUN apk add --no-cache \
     build-base shadow vim curl \
