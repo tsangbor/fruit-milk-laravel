@@ -1,4 +1,6 @@
-FROM php:7.4-fpm
+FROM php:7.4-fpm-alpine
+
+WORKDIR /var/www
 
 RUN apk add --no-cache nginx wget
 
@@ -6,22 +8,31 @@ RUN mkdir -p /run/nginx
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-WORKDIR /var/www
+# 3 Install Additional dependencies
+RUN apk update && apk add --no-cache \
+    build-base shadow vim curl \
+    php7 \
+    php7-fpm \
+    php7-common \
+    php7-pdo \
+    php7-pdo_mysql \
+    php7-mysqli \
+    php7-mcrypt \
+    php7-mbstring \
+    php7-xml \
+    php7-openssl \
+    php7-json \
+    php7-phar \
+    php7-zip \
+    php7-gd \
+    php7-dom \
+    php7-session \
+    php7-zlib
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-    libfreetype6-dev \
-    libjpeg62-turbo-dev \
-    libpng-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd
-RUN docker-php-ext-install mysqli \
-    && docker-php-ext-install pdo_mysql mbstring \
-    && docker-php-ext-install pdo \
-    && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-install bcmath \
-    && docker-php-ext-enable opcache \
-    && docker-php-ext-install zip
+# 4 Add and Enable PHP-PDO Extenstions
+RUN docker-php-ext-install pdo pdo_mysql mysqli
+RUN docker-php-ext-enable pdo_mysql
+
 
 # Copy files
 COPY . /var/www
