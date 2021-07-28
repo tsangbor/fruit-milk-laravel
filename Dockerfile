@@ -7,9 +7,11 @@ RUN apk add --no-cache nginx wget
 RUN mkdir -p /run/nginx
 
 COPY docker/nginx.conf /etc/nginx/nginx.conf
+RUN apk update
 
+RUN apk add libpng libpng-dev libjpeg-turbo-dev libwebp-dev zlib-dev libxpm-dev gd && docker-php-ext-install gd
 # 3 Install Additional dependencies
-RUN apk update && apk add --no-cache \
+RUN apk add --no-cache \
     build-base shadow vim curl \
     php7 \
     php7-fpm \
