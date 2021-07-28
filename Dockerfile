@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:7.4-fpm
 
 RUN apk add --no-cache nginx wget
 
@@ -9,10 +9,17 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 WORKDIR /var/www
 
 # Install dependencies
-RUN docker-php-ext-configure gd \
-    && docker-php-ext-install gd \
+RUN apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd
+RUN docker-php-ext-install mysqli \
     && docker-php-ext-install pdo_mysql mbstring \
     && docker-php-ext-install pdo \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install bcmath \
     && docker-php-ext-enable opcache \
     && docker-php-ext-install zip
 
