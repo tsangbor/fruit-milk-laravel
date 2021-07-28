@@ -33,10 +33,16 @@ RUN apk update && apk add --no-cache \
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 RUN docker-php-ext-enable pdo_mysql
 
+# 6 Remove Cache
+RUN rm -rf /var/cache/apk/*
 
-# Copy files
-COPY . /var/www
-COPY ./deploy/local.ini /usr/local/etc/php/local.ini
+# 7 Add UID '1000' to www-data
+RUN usermod -u 1000 www-data
+
+# 8 Copy existing application directory permissions
+COPY --chown=www-data:www-data . /var/www
+
+#COPY ./deploy/local.ini /usr/local/etc/php/local.ini
 
 RUN chmod +rwx /var/www
 RUN chmod -R 777 /var/www
