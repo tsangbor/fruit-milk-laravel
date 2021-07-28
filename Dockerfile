@@ -1,7 +1,5 @@
 FROM php:7.4-fpm
 
-USER root
-
 RUN apk add --no-cache nginx wget
 
 RUN mkdir -p /run/nginx
