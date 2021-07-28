@@ -1,0 +1,35 @@
+#sidebar ul.menu-categories li.menu > .dropdown-toggle,
+.table > thead > tr > th {
+    font-size:15px;
+}
+.form-form .form-form-wrap form .field-wrapper svg {
+    color: #696969;
+}
+.dt-buttons .dt-button {
+    color: #fff !important;
+    background-color: #999999 !important;
+    border-color: #999999;
+}
+
+.table > tbody > tr > td,
+div.dataTables_wrapper div.dataTables_info {;
+    color: #333333;
+}
+.page-item.active .page-link {
+    background-color: #888888;
+}
+
+.wedget-footer {
+    position: fixed;
+    bottom: 0;
+    width: calc(100%);
+    background: #fff;
+    padding: 12px 20px;
+    border-top: 1px solid #f1f2f3;
+    z-index: 5;
+}
+.menu i {
+    width:23.5px;
+    font-size: 20px;
+    vertical-align: text-bottom;
+}
