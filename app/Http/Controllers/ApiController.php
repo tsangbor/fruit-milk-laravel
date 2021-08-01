@@ -78,10 +78,24 @@ class ApiController extends Controller
     {
         if ($request->isJson()) {
             //dd($request->ip());
+            //本日額度
+            $couponDailyUsed = DB::table('coupon_data')
+                        ->where(function ($query) {
+                            $query->whereRaw("cpTake=1")
+                                ->whereRaw("DATE_FORMAT(cpTakeTime,'%Y-%m-%d') = '".date('Y-m-d')."'");
+                        })
+                        ->orWhere(function ($query) {
+                            $query->whereRaw("cpLock=1")
+                                ->whereRaw("DATE_FORMAT(cpLockTime,'%Y-%m-%d') = '".date('Y-m-d')."'");
+                        })
+                        ->count();
+            if ($couponDailyUsed >= $this->appconfig['DAILY_MAX_MILK']) {
+                return response()->json(['success' => 0, 'message' => '本日活動額度已發送完畢']);
+            }
 
 
             $LINE_CLIENTID = env('LINE_CLIENTID');
-            log::DEBUG($request->json()->all());
+            //log::DEBUG($request->json()->all());
             $userId = $request->json()->get('userId');
             $access_token = $request->json()->get('access_token');
             $id_token = $request->json()->get('id_token');
@@ -157,7 +171,7 @@ class ApiController extends Controller
                                         ->where(DB::raw("
                                             ( cpTake=1 AND DATE_FORMAT(cpTakeTime,'%Y-%m-%d')='".date('Y-m-d')."' ) OR ( cpLock=1 AND DATE_FORMAT(cpLockTime,'%Y-%m-%d')='".date('Y-m-d')."')
                                         "))->count();*/
-                        log::DEBUG($couponDailyUsed . '|' . $this->appconfig['DAILY_MAX_MILK']);
+                        //log::DEBUG($couponDailyUsed . '|' . $this->appconfig['DAILY_MAX_MILK']);
                         if ($couponDailyUsed >= $this->appconfig['DAILY_MAX_MILK']) {
                             return response()->json(['success' => 0, 'message' => '本日活動額度已發送完畢']);
                         } else {

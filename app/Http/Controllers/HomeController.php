@@ -142,19 +142,26 @@ class HomeController extends Controller
                 $arySearch[] = " coupon_data.cpTakeTime  LIKE '%$txtSearch%' ";
                 $sqlSearch = " AND ( " . implode(" OR ", $arySearch) . ") ";
 
-
-                $where[] = array( 'coupon_data.cpLink', 'like', "%$txtSearch%" );
-                $where[] = array( 'coupon_data.cpLink', 'like', "%$txtSearch%" );
-                $where[] = array( 'coupon_data.cpCode', 'like', "%$txtSearch%" );
-                $where[] = array( 'coupon_data.cpUserID', 'like', "%$txtSearch%" );
-                $where[] = array( 'coupon_data.cpTakeTime', 'like', "%$txtSearch%" );
+                $orWhere[] = array( 'coupon_data.cpID', 'like', '%'.$txtSearch.'%' );
+                $orWhere[] = array( 'coupon_data.cpLink', 'like', '%'.$txtSearch.'%' );
+                $orWhere[] = array( 'coupon_data.cpCode', 'like', '%'.$txtSearch.'%' );
+                $orWhere[] = array( 'coupon_data.cpUserID', 'like', '%'.$txtSearch.'%' );
+                $orWhere[] = array( 'coupon_data.cpTakeTime', 'like', '%'.$txtSearch.'%' );
             }
 
             $dataAry = DB::table('coupon_data');
             if (isset($where) && sizeof($where) > 0) {
-                $dataAry = $dataAry->where($where);
+                $dataAry->where($where);
+            }
+            if (isset($orWhere) && sizeof($orWhere) > 0) {
+                $dataAry->where(function ($query) use ($orWhere) {
+                    foreach ($orWhere as $w => $o) {
+                        $query->orWhere($o[0], $o[1], $o[2]);
+                    }
+                });
             }
             $dataAry = $dataAry->orderBy($orderName, $sort)->offset($request->start)->limit($request->length)->get();
+
             if ($dataAry) {
                 foreach ($dataAry as $k => $v) {
                     $aryTemp['cpId'] = $v->cpId;
@@ -214,7 +221,7 @@ class HomeController extends Controller
             ->setCellValue('B1', '獎項')
             ->setCellValue('C1', '資格')
             ->setCellValue('D1', '領獎人LINE ID')
-            ->setCellValue('E1', '領獎人姓名')
+            /*->setCellValue('E1', '領獎人姓名')*/
             ->setCellValue('F1', '領獎人LINE好友')
             ->setCellValue('G1', '領獎時間')
             ->setCellValue('H1', '領獎IP')
@@ -223,6 +230,7 @@ class HomeController extends Controller
         if ($report) {
             $row = 2;
             $no = 1;
+
             foreach ($report as $k => $v) {
                 $prizeName = ($v->cpType == 'A')? '木瓜':'西瓜';
                 $prizeStatus = ($v->cpStatus == 'N')? '正常':'好友';
@@ -233,7 +241,7 @@ class HomeController extends Controller
                 ->setCellValue('B' . $row, $prizeName)
                 ->setCellValue('C' . $row, $prizeStatus)
                 ->setCellValue('D' . $row, $v->cpUserID)
-                ->setCellValue('E' . $row, $v->userName)
+                /*->setCellValue('E' . $row, $this->removeEmoji($v->userName))*/
                 ->setCellValue('F' . $row, $prizeFriends)
                 ->setCellValue('G' . $row, $v->cpTakeTime)
                 ->setCellValue('H' . $row, $v->cpIP)
@@ -331,5 +339,25 @@ class HomeController extends Controller
         return redirect()
         ->intended(route('admin.setting'))
         ->with('status', '活動設定儲存完成');
+    }
+
+
+    private function removeEmoji($text)
+    {
+        $cleanText = "";
+
+        // Match Emoticons
+        $regexEmoticons = '/[\x{1F600}-\x{1F64F}]/u';
+        $cleanText = preg_replace($regexEmoticons, '', $text);
+
+        // Match Miscellaneous Symbols and Pictographs
+        $regexSymbols = '/[\x{1F300}-\x{1F5FF}]/u';
+        $cleanText = preg_replace($regexSymbols, '', $cleanText);
+
+        // Match Transport And Map Symbols
+        $regexTransport = '/[\x{1F680}-\x{1F6FF}]/u';
+        $cleanText = preg_replace($regexTransport, '', $cleanText);
+
+        return $cleanText;
     }
 }

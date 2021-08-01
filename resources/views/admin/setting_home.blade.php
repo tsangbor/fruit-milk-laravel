@@ -148,7 +148,7 @@
 
                                     <div class="form-group col-md-6">
                                         <label for="{!! $daily['key']!!}">{!! $daily['date']!!}</label>
-                                        <input type="text" name="setting[{!! $daily['key']!!}]" class="form-control" id="{!! $daily['key']!!}" placeholder="" value="{!! $daily['val']!!}" @if( $daily['pass']==1 ) readonly @endif  >
+                                        <input type="text" name="setting[{!! $daily['key']!!}]" class="form-control" id="{!! $daily['key']!!}" placeholder="" value="{!! $daily['val']!!}"   >
                                     </div>
                                         @if( $loop->iteration>1 && $loop->iteration%2 == 0 )
                                             </div><div class="form-row mb-4">
